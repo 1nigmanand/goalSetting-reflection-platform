@@ -50,22 +50,6 @@ const LoadingSkeleton: React.FC = () => (
                 </div>
             </div>
         </div>
-        
-        <style>{`
-            @keyframes shimmer {
-                0% { background-position: -200% 0; }
-                100% { background-position: 200% 0; }
-            }
-            .shimmer {
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-                background-size: 200% 100%;
-                animation: shimmer 1.5s infinite;
-            }
-            .dark .shimmer {
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-                background-size: 200% 100%;
-            }
-        `}</style>
     </div>
 );
 

@@ -1,72 +1,18 @@
-// Firebase Security Rules for Firestore
-// Copy-paste these rules in Firebase Console -> Firestore Database -> Rules tab
+rules_version='2'
 
-rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if user is admin
-    function isAdmin() {
-      return request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-    
-    // Users collection - allow authenticated users to read/write
-    match /users/{userId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Admin users collection - allow authenticated users to read/write
-    match /adminUsers/{userId} {
-      allow read, write: if request.auth != null;
-    }
-    
-    // Admin config collection - only admins can read/write
-    match /adminConfig/{configId} {
-      allow read, write: if isAdmin();
-    }
-    
-    // Students collection - allow read/write for demo
-    match /students/{studentId} {
-      allow read, write: if true; // For development - make secure later
-    }
-    
-    // Daily entries collection (note: matches code's COLLECTIONS.DAILY_ENTRIES = 'dailyEntries')
-    match /dailyEntries/{entryId} {
-      allow read, write: if true; // For development - make secure later
-    }
-    
-    // Admin dashboard data
-    match /adminData/{document=**} {
-      allow read, write: if true; // For development - make secure later
-    }
-    
-    // Catch-all for development - allow everything
     match /{document=**} {
-      allow read, write: if true; // For development - make secure later
+      // This rule allows anyone with your database reference to view, edit,
+      // and delete all data in your database. It is useful for getting
+      // started, but it is configured to expire after 30 days because it
+      // leaves your app open to attackers. At that time, all client
+      // requests to your database will be denied.
+      //
+      // Make sure to write security rules for your app before that time, or
+      // else all client requests to your database will be denied until you
+      // update your rules.
+      allow read, write: if request.time < timestamp.date(2025, 11, 28);
     }
   }
 }
-
-// Production-ready rules would look like:
-/*
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Only authenticated users can access their own data
-    match /students/{studentId} {
-      allow read, write: if request.auth != null && request.auth.uid == studentId;
-    }
-    
-    match /dailyEntries/{entryId} {
-      allow read, write: if request.auth != null && 
-        request.auth.uid == resource.data.studentId;
-    }
-    
-    // Only admin users can access admin data
-    match /adminData/{document=**} {
-      allow read: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-  }
-}
-*/
